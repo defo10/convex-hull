@@ -1,14 +1,22 @@
 import 'package:convex_hull/convex_hull.dart';
 
+class Example {
+  final double xCoordinate;
+  final double yCoordinate;
+  final String info;
+
+  const Example(this.xCoordinate, this.yCoordinate, this.info);
+}
+
 void main() {
-  final points = <Point2d>[
-    Point2d(0.0, 0.0),
-    Point2d(2.0, 0.0),
-    Point2d(2.0, 2.0),
-    Point2d(0.0, 2.0),
-    Point2d(1.0, 1.0), // lies within convex hull
+  final points = <Example>[
+    Example(0.0, 0.0, "1"),
+    Example(2.0, 0.0, "2"),
+    Example(2.0, 2.0, "3"),
+    Example(0.0, 2.0, "6"),
+    Example(1.0, 1.0, "f1"), // lies within convex hull
   ];
 
-  convexHull(points);
-  // >>> [(0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0)]
+  convexHull<Example>(points, x: (e) => e.xCoordinate, y: (e) => e.yCoordinate);
+  // > [Example(0.0, 0.0, "1"), Example(2.0, 0.0, "2"), Example(2.0, 2.0, "3"), Example(0.0, 2.0, "6")]
 }

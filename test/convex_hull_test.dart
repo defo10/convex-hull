@@ -1,41 +1,52 @@
 import 'package:convex_hull/convex_hull.dart';
 import 'package:test/test.dart';
 
+class Example {
+  final double xCoordinate;
+  final double yCoordinate;
+  final String info;
+
+  const Example(this.xCoordinate, this.yCoordinate, this.info);
+}
+
 void main() {
   test('starts at most leftern point and goes counter-clockwise', () {
-    final points = <Point2d>[
-      Point2d(0.5, 1.5),
-      Point2d(1.5, 0.5),
-      Point2d(2.5, 1.5),
-      Point2d(1.5, 2.5),
+    final points = <Example>[
+      Example(0.5, 1.5, "1"),
+      Example(1.5, 0.5, "2"),
+      Example(2.5, 1.5, "3"),
+      Example(1.5, 2.5, "4"),
     ];
 
-    expect(convexHull(points), equals(points));
+    final hull = convexHull<Example>(points,
+        x: (e) => e.xCoordinate, y: (e) => e.yCoordinate).map((e) => e.info);
+    expect(hull, equals(["1", "2", "3", "4"]));
   });
 
   test("does not contain inner points", () {
-    final innerPoint1 = Point2d(0.2, 0.2);
-    final innerPoint2 = Point2d(0.4, 0.4);
-    final points = <Point2d>[
-      Point2d(0, 0),
-      innerPoint1,
-      Point2d(1, 0),
-      innerPoint2,
-      Point2d(1, 1),
-      Point2d(0, 1),
+    final points = <Example>[
+      Example(0, 0, "a"),
+      Example(0.2, 0.2, "b"),
+      Example(1, 0, "c"),
+      Example(0.2, 0.2, "d"),
+      Example(1, 1, "e"),
+      Example(0, 1, "f"),
     ];
 
-    final expected =
-        points.where((el) => el != innerPoint1 && el != innerPoint2).toList();
-    expect(convexHull(points), equals(expected));
+    final expected = ["a", "c", "e", "f"];
+    final hull = convexHull<Example>(points,
+        x: (e) => e.xCoordinate, y: (e) => e.yCoordinate).map((e) => e.info);
+    expect(hull, equals(expected));
   });
 
   test('does nothing if < 3 points', () {
-    final points = <Point2d>[
-      Point2d(0.5, 1.5),
-      Point2d(1.5, 0.5),
+    final points = <Example>[
+      Example(0.5, 1.5, "1"),
+      Example(1.5, 0.5, "2"),
     ];
 
-    expect(convexHull(points), equals(points));
+    final hull = convexHull<Example>(points,
+        x: (e) => e.xCoordinate, y: (e) => e.yCoordinate).map((e) => e.info);
+    expect(hull, equals(["1", "2"]));
   });
 }

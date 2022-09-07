@@ -6,15 +6,16 @@ extension on List<Point2d> {
   Point2d get secondToLast => elementAt(length - 2);
 }
 
-/// [Point2d] consists of two properties, x and y, and some methods which are
-/// used to calculate the convex hull.
-class Point2d implements Comparable<Point2d> {
+/// [Point2d] consists of the coordinate, x and y, a ref to the original Object
+///  and some methods which are used to calculate the convex hull.
+class Point2d<T> implements Comparable<Point2d> {
   final double x;
   final double y;
+  final T? ref;
 
-  const Point2d(this.x, this.y);
+  const Point2d(this.x, this.y, [this.ref]);
 
-  Point2d sub(Point2d p) => Point2d(x - p.x, y - p.y);
+  Point2d operator -(Point2d p) => Point2d(x - p.x, y - p.y);
   double cross(Point2d p) => x * p.y - y * p.x;
 
   @override
@@ -32,8 +33,8 @@ enum Direction {
 
   /// returns the turn direction to go from line AB to o
   static Direction between(Point2d a, Point2d b, Point2d o) {
-    final AB = b.sub(a);
-    final BO = o.sub(b);
+    final AB = b - a;
+    final BO = o - b;
     final crossProduct = AB.cross(BO);
     if (crossProduct > 0) {
       return Direction.counterclockwise;
@@ -47,6 +48,8 @@ enum Direction {
 
 /// calculates the convex hull of [points].
 ///
+/// [x] and [y] are accessor functions which specify what are the coordinates.
+///
 /// The returned convex hull starts with the leftmost point and traverses
 /// counter-clockwise.
 ///
@@ -55,20 +58,22 @@ enum Direction {
 /// to the console.
 ///
 /// Monotone chain is used as a n algorithm, having O(n log n) expected runtime.
-Iterable<Point2d> convexHull(Iterable<Point2d> points) {
+Iterable<T> convexHull<T>(Iterable<T> points,
+    {required double Function(T) x, required double Function(T) y}) {
   if (Set.from(points).length < 3) {
     Logger("ConvexHull").info("convexHull was called with less than 3 points.");
     return points;
   }
 
-  final sortedPoints = List<Point2d>.from(points)..sort();
+  final sortedPoints = points.map((e) => Point2d(x(e), y(e), e)).toList()
+    ..sort();
 
   final lowerHalf = _halfHull(sortedPoints);
   final upperHalf = _halfHull(sortedPoints.reversed);
 
-  lowerHalf.removeLast();
+  lowerHalf.removeLast(); // last of lower half is same as first of upper half.
   upperHalf.removeLast();
-  return [...lowerHalf, ...upperHalf];
+  return [...lowerHalf.map((e) => e.ref), ...upperHalf.map((e) => e.ref)];
 }
 
 List<Point2d> _halfHull(Iterable<Point2d> points) {
