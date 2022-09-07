@@ -6,6 +6,8 @@ extension on List<Point2d> {
   Point2d get secondToLast => elementAt(length - 2);
 }
 
+/// [Point2d] consists of two properties, x and y, and some methods which are
+/// used to calculate the convex hull.
 class Point2d implements Comparable<Point2d> {
   final double x;
   final double y;
@@ -43,6 +45,16 @@ enum Direction {
   }
 }
 
+/// calculates the convex hull of [points].
+///
+/// The returned convex hull starts with the leftmost point and traverses
+/// counter-clockwise.
+///
+/// Convex hull only works for lists of at least 3 points. If there are less,
+/// the function returns the points without changing anything and logs an info
+/// to the console.
+///
+/// Monotone chain is used as a n algorithm, having O(n log n) expected runtime.
 List<Point2d> convexHull(List<Point2d> points) {
   if (Set.from(points).length < 3) {
     Logger("ConvexHull").info("convexHull was called with less than 3 points.");
