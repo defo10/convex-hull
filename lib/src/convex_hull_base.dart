@@ -55,7 +55,7 @@ enum Direction {
 /// to the console.
 ///
 /// Monotone chain is used as a n algorithm, having O(n log n) expected runtime.
-List<Point2d> convexHull(List<Point2d> points) {
+Iterable<Point2d> convexHull(Iterable<Point2d> points) {
   if (Set.from(points).length < 3) {
     Logger("ConvexHull").info("convexHull was called with less than 3 points.");
     return points;
