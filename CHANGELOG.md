@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Add optional parameter to keep collinear points.
+
 ## 1.1.1
 
 - Change documentation to take into account orientation of coordinate system.

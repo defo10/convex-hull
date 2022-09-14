@@ -49,6 +49,9 @@ enum Direction {
 /// calculates the convex hull of [points].
 ///
 /// [x] and [y] are accessor functions which specify what are the coordinates.
+/// [keepCollinear] indicates if points which lie on a line between
+/// two points of the convex hull (e.g. (1;0) in [(0;0), (1;0), (2;0), ...])
+/// should be preseved.
 ///
 /// The returned convex hull starts with the leftmost point and traverses
 /// counter-clockwise for standard orientation (positive x is right, positive
@@ -62,7 +65,9 @@ enum Direction {
 ///
 /// Monotone chain is used as a n algorithm, having O(n log n) expected runtime.
 Iterable<T> convexHull<T>(Iterable<T> points,
-    {required double Function(T) x, required double Function(T) y}) {
+    {required double Function(T) x,
+    required double Function(T) y,
+    bool keepCollinear = false}) {
   if (Set.from(points).length < 3) {
     Logger("ConvexHull").info("convexHull was called with less than 3 points.");
     return points;
@@ -73,23 +78,34 @@ Iterable<T> convexHull<T>(Iterable<T> points,
 
   // wlog we assume a standard orientation, thus receive the lower half first,
   // then the upper half. For left-handed orientation, the names would switch.
-  final lowerHalf = _halfHull(sortedPoints);
-  final upperHalf = _halfHull(sortedPoints.reversed);
+  final lowerHalf = _halfHull(sortedPoints, keepCollinear);
+  final upperHalf = _halfHull(sortedPoints.reversed, keepCollinear);
 
   lowerHalf.removeLast(); // last of lower half is same as first of upper half.
   upperHalf.removeLast();
   return [...lowerHalf.map((e) => e.ref), ...upperHalf.map((e) => e.ref)];
 }
 
-List<Point2d> _halfHull(Iterable<Point2d> points) {
+List<Point2d> _halfHull(Iterable<Point2d> points, bool keepCollinear) {
   final halfHull = <Point2d>[];
   for (final point in points) {
-    while (halfHull.length >= 2 &&
-        Direction.between(halfHull.secondToLast, halfHull.last, point) !=
-            Direction.counterclockwise) {
+    while (_lastPointIsInside(halfHull, point, keepCollinear)) {
       halfHull.removeLast();
     }
     halfHull.add(point);
   }
   return halfHull;
+}
+
+bool _lastPointIsInside(
+    List<Point2d> halfHull, Point2d point, bool keepCollinear) {
+  if (keepCollinear) {
+    return halfHull.length >= 2 &&
+        Direction.between(halfHull.secondToLast, halfHull.last, point) ==
+            Direction.clockwise;
+  } else {
+    return halfHull.length >= 2 &&
+        Direction.between(halfHull.secondToLast, halfHull.last, point) !=
+            Direction.counterclockwise;
+  }
 }

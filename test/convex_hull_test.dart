@@ -50,15 +50,20 @@ void main() {
     expect(hull, equals(["1", "2"]));
   });
 
-  test("goes clockwise starting from left", () {
+  test("keeps points on same line", () {
     final points = <Example>[
-      Example(0, 0, "a"),
-      Example(60, 0, "b"),
-      Example(60, -60, "c"),
+      Example(0, 0, "lb"),
+      Example(0, 5, "middle"),
+      Example(0, 10, "lt"),
+      Example(10, 10, "rt"),
+      Example(10, 0, "rb"),
     ];
 
     final hull = convexHull<Example>(points,
-        x: (e) => e.xCoordinate, y: (e) => e.yCoordinate).map((e) => e.info);
-    expect(hull, equals(["a", "c", "b"]));
+            x: (e) => e.xCoordinate,
+            y: (e) => e.yCoordinate,
+            keepCollinear: true)
+        .map((e) => e.info);
+    expect(hull, equals(['lb', 'rb', 'rt', 'lt', 'middle']));
   });
 }
