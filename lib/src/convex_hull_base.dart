@@ -51,7 +51,10 @@ enum Direction {
 /// [x] and [y] are accessor functions which specify what are the coordinates.
 ///
 /// The returned convex hull starts with the leftmost point and traverses
-/// counter-clockwise.
+/// counter-clockwise for standard orientation (positive x is right, positive
+/// y is up), and clockwise for left-handed orientation (positive x is right,
+/// positive y is *down*). Left-handed orientation is common in many computer
+/// graphics applications.
 ///
 /// Convex hull only works for lists of at least 3 points. If there are less,
 /// the function returns the points without changing anything and logs an info
@@ -68,6 +71,8 @@ Iterable<T> convexHull<T>(Iterable<T> points,
   final sortedPoints = points.map((e) => Point2d(x(e), y(e), e)).toList()
     ..sort();
 
+  // wlog we assume a standard orientation, thus receive the lower half first,
+  // then the upper half. For left-handed orientation, the names would switch.
   final lowerHalf = _halfHull(sortedPoints);
   final upperHalf = _halfHull(sortedPoints.reversed);
 

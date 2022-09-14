@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Change documentation to take into account orientation of coordinate system.
+
 ## 1.1.0
 
 - Use accessor functions to point coordinates instead of specified classes.

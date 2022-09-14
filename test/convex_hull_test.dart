@@ -49,4 +49,16 @@ void main() {
         x: (e) => e.xCoordinate, y: (e) => e.yCoordinate).map((e) => e.info);
     expect(hull, equals(["1", "2"]));
   });
+
+  test("goes clockwise starting from left", () {
+    final points = <Example>[
+      Example(0, 0, "a"),
+      Example(60, 0, "b"),
+      Example(60, -60, "c"),
+    ];
+
+    final hull = convexHull<Example>(points,
+        x: (e) => e.xCoordinate, y: (e) => e.yCoordinate).map((e) => e.info);
+    expect(hull, equals(["a", "c", "b"]));
+  });
 }
