@@ -19,8 +19,15 @@ class Point2d<T> implements Comparable<Point2d> {
   double cross(Point2d p) => x * p.y - y * p.x;
 
   @override
-  int compareTo(Point2d other) =>
-      ((x != other.x) ? x - other.x : y - other.y).round();
+  int compareTo(Point2d other) {
+    if (x != other.x) {
+      return x.compareTo(other.x);
+    }
+    if (y != other.y) {
+      return y.compareTo(other.y);
+    }
+    return 0;
+  }
 
   @override
   String toString() => "($x;$y)";
